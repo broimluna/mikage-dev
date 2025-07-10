@@ -1,3 +1,4 @@
+```yaml
 name: Mikage Build
 
 on:
@@ -16,13 +17,21 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake ninja-build python3-pip libvulkan-dev
+        sudo apt-get install -y cmake ninja-build python3-pip libvulkan-dev gcc-11 g++-11
         pip install conan --break-system-packages
 
     - name: Configure Conan profile
       run: |
         mkdir -p ~/.conan2/profiles
         cat > ~/.conan2/profiles/default << EOL
+        [settings]
+        os=Linux
+        arch=x86_64
+        compiler=gcc
+        compiler.version=11
+        compiler.libcxx=libstdc++11
+        build_type=Release
+        compiler.cppstd=17
         [platform_requires]
         boost/1.80.0
         cryptopp/8.5.0
@@ -30,7 +39,6 @@ jobs:
         range-v3/0.11.0
         catch2/2.13.7
         libunwind/1.8.0
-
         [conf]
         tools.build:cflags=["-std=gnu17"]
         EOL
@@ -53,3 +61,4 @@ jobs:
     - name: Install
       working-directory: build
       run: sudo ninja install
+```
